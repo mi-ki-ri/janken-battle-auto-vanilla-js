@@ -22,8 +22,10 @@
       "
     >
       <section>
-        {{player.name}}<br />
-        {{player.hp}} / {{player.mhp}}
+        {{enemy.name}}<br />
+
+        {{enemy.hp}} / {{enemy.mhp}}
+        <hr />
       </section>
       <div>
         {{msg}}
@@ -56,15 +58,16 @@
             <input type="range" min="16" max="66" v-model="player.goo_ritsu" />
           </label>
         </section>
-        <section v-if="this.phase != null && this.phase == 'START'">
+        <section v-if="this.phase != null && this.phase !== 'END'">
           <button @click="input">進む</button>
           <button @click="auto">オート</button>
         </section>
       </div>
-      <section>
-        {{enemy.name}}<br />
 
-        {{enemy.hp}} / {{enemy.mhp}}
+      <section>
+        <hr />
+        {{player.name}}<br />
+        {{player.hp}} / {{player.mhp}}
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
@@ -74,8 +77,8 @@
         data: {
           player: {
             name: "勇者",
-            hp: 100,
-            mhp: 100,
+            hp: 500,
+            mhp: 500,
             goo_ritsu: 33,
             goo_pow: 33,
             paa_ritsu: 33,
@@ -85,8 +88,8 @@
           },
           enemy: {
             name: "ウルフ",
-            hp: 100,
-            mhp: 100,
+            hp: 500,
+            mhp: 500,
             str: 33,
             dex: 33,
             int: 33,
@@ -171,11 +174,11 @@
             }
             if (this.player.hp < 0) {
               this.msg = "まけた…世界は終わりだ…";
-              this.phase = "LOOSE";
+              this.phase = "END";
             }
             if (this.enemy.hp < 0) {
               this.msg = "なんとかなった…";
-              this.phase = "WIN";
+              this.phase = "END";
             }
           },
           auto() {
@@ -185,7 +188,7 @@
                 clearInterval(interval);
               }
               this.input();
-            }, 250);
+            }, 125);
           },
         },
       });
