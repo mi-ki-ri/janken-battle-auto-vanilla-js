@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Janken Battle</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css"
+    />
+  </head>
+  <body style="box-sizing: border-box">
+    <main
+      id="app"
+      style="
+        height: 95vh;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column;
+      "
+    >
+      <section>
+        {{player.name}}<br />
+        {{player.hp}} / {{player.mhp}}
+      </section>
+      <div>
+        {{msg}}
+
+        <section v-if="this.phase != null && this.phase == 'START'">
+          <label>
+            DEX: {{player.paa_pow}}
+            <input type="range" min="16" max="66" v-model="player.paa_pow" />
+          </label>
+          <label>
+            STR: {{player.chii_pow}}
+            <input type="range" min="16" max="66" v-model="player.chii_pow" />
+          </label>
+          <label>
+            INT: {{player.goo_pow}}
+            <input type="range" min="16" max="66" v-model="player.goo_pow" />
+          </label>
+        </section>
+        <section v-if="this.phase != null && this.phase == 'START'">
+          <label>
+            弓矢攻撃率: {{player.paa_ritsu}}
+            <input type="range" min="16" max="66" v-model="player.paa_ritsu" />
+          </label>
+          <label>
+            武器攻撃率: {{player.chii_ritsu}}
+            <input type="range" min="16" max="66" v-model="player.chii_ritsu" />
+          </label>
+          <label>
+            魔法攻撃率: {{player.goo_ritsu}}
+            <input type="range" min="16" max="66" v-model="player.goo_ritsu" />
+          </label>
+        </section>
+
+        <button @click="input">進む</button>
+      </div>
+      <section>
+        {{enemy.name}}<br />
+
+        {{enemy.hp}} / {{enemy.mhp}}
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+          player: {
+            name: "勇者",
+            hp: 100,
+            mhp: 100,
+            goo_ritsu: 33,
+            goo_pow: 33,
+            paa_ritsu: 33,
+            paa_pow: 33,
+            chii_ritsu: 33,
+            chii_pow: 33,
+          },
+          enemy: {
+            name: "ウルフ",
+            hp: 100,
+            mhp: 100,
+            str: 33,
+            dex: 33,
+            int: 33,
+          },
+          phase: "INIT",
+          msg: "",
+        },
+        mounted() {
+          this.phase = "START";
+          this.msg = `${this.enemy.name}が現れた！`;
+        },
+        methods: {
+          input() {
+            const all_ritsu = [];
+            for (let i = 0; i < this.player.goo_ritsu; i++) {
+              all_ritsu.push(0);
+            }
+            for (let i = 0; i < this.player.chii_ritsu; i++) {
+              all_ritsu.push(1);
+            }
+            for (let i = 0; i < this.player.paa_ritsu; i++) {
+              all_ritsu.push(2);
+            }
+
+            const result =
+              all_ritsu[Math.floor(Math.random() * all_ritsu.length)];
+            const eneresult = Math.floor(Math.random() * 3);
+            if (result == 0) {
+              if (eneresult == 0) {
+                // グー : グー
+                this.msg = `互角の戦い！`;
+              } else if (eneresult == 1) {
+                // グー : チョキ
+                let dmg = Math.max(this.player.goo_pow - this.enemy.str / 2, 1);
+                this.enemy.hp -= dmg;
+                this.msg = `${this.enemy.name} に ${dmg} のダメージ！`;
+              } else if (eneresult == 2) {
+                // グー : パー
+                let dmg = Math.max(this.enemy.dex - this.player.goo_pow / 2, 1);
+                this.player.hp -= dmg;
+                this.msg = `${this.player.name} に ${dmg} のダメージ！`;
+              }
+            }
+            if (result == 1) {
+              if (eneresult == 0) {
+                // チョキ : グー
+                let dmg = Math.max(
+                  this.enemy.int - this.player.chii_pow / 2,
+                  1
+                );
+                this.player.hp -= dmg;
+                this.msg = `${this.player.name} に ${dmg} のダメージ！`;
+              } else if (eneresult == 1) {
+                // チョキ : チョキ
+                this.msg = `互角の戦い！`;
+              } else if (eneresult == 2) {
+                // チョキ : パー
+                let dmg = Math.max(
+                  this.player.chii_pow - this.enemy.dex / 2,
+                  1
+                );
+                this.enemy.hp -= dmg;
+                this.msg = `${this.enemy.name} に ${dmg} のダメージ！`;
+              }
+            }
+            if (result == 2) {
+              if (eneresult == 0) {
+                // パー : グー
+                let dmg = Math.max(this.player.paa_pow - this.enemy.int / 2, 1);
+                this.enemy.hp -= dmg;
+                this.msg = `${this.enemy.name} に ${dmg} のダメージ！`;
+              } else if (eneresult == 1) {
+                // パー : チョキ
+                let dmg = Math.max(this.enemy.str - this.player.paa_pow / 2, 1);
+                this.player.hp -= dmg;
+                this.msg = `${this.player.name} に ${dmg} のダメージ！`;
+              } else if (eneresult == 2) {
+                // パー : パー
+                this.msg = `互角の戦い！`;
+              }
+            }
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
