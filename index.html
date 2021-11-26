@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Janken Battle</title>
+    <title>Janken Battle AUTO</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css"
@@ -56,8 +56,10 @@
             <input type="range" min="16" max="66" v-model="player.goo_ritsu" />
           </label>
         </section>
-
-        <button @click="input">進む</button>
+        <section v-if="this.phase != null && this.phase == 'START'">
+          <button @click="input">進む</button>
+          <button @click="auto">オート</button>
+        </section>
       </div>
       <section>
         {{enemy.name}}<br />
@@ -98,6 +100,7 @@
         },
         methods: {
           input() {
+            this.phase = "COMMAND";
             const all_ritsu = [];
             for (let i = 0; i < this.player.goo_ritsu; i++) {
               all_ritsu.push(0);
@@ -166,6 +169,23 @@
                 this.msg = `互角の戦い！`;
               }
             }
+            if (this.player.hp < 0) {
+              this.msg = "まけた…世界は終わりだ…";
+              this.phase = "LOOSE";
+            }
+            if (this.enemy.hp < 0) {
+              this.msg = "なんとかなった…";
+              this.phase = "WIN";
+            }
+          },
+          auto() {
+            const interval = setInterval(() => {
+              console.log(this.phase);
+              if (this.phase != "START" && this.phase != "COMMAND") {
+                clearInterval(interval);
+              }
+              this.input();
+            }, 250);
           },
         },
       });
