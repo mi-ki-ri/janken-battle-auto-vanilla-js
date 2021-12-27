@@ -11,3 +11,4 @@ app.get('/', function(req, res) {
 
 app.listen(port);
 console.log('Server started at http://localhost:' + port);
+console.log("http://192.168.11.75:"+port)
